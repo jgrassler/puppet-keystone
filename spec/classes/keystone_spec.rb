@@ -583,5 +583,38 @@ describe 'keystone' do
         :provider => 'pacemaker'
       )}
     end
+
+    describe 'with extra log options' do
+      let :params do
+        default_params.merge({
+          :logging_context_format_string => '%(asctime)s.%(msecs)03d %(process)d %(levelname)s %(name)s [%(request_id)s %(user_identity)s] %(instance)s%(message)s',
+          :logging_default_format_string => '%(asctime)s.%(msecs)03d %(process)d %(levelname)s %(name)s [-] %(instance)s%(message)s',
+          :logging_debug_format_suffix => '%(funcName)s %(pathname)s:%(lineno)d',
+          :logging_exception_prefix => '%(asctime)s.%(msecs)03d %(process)d TRACE %(name)s %(instance)s',
+          :log_config_append => '/etc/keystone/logging.conf'
+        })
+      end
+
+      it { should contain_keystone_config('DEFAULT/logging_context_format_string').with_value('%(asctime)s.%(msecs)03d %(process)d %(levelname)s %(name)s [%(request_id)s %(user_identity)s] %(instance)s%(message)s') }
+      it { should contain_keystone_config('DEFAULT/logging_default_format_string').with_value('%(asctime)s.%(msecs)03d %(process)d %(levelname)s %(name)s [-] %(instance)s%(message)s') }
+      it { should contain_keystone_config('DEFAULT/logging_debug_format_suffix').with_value('%(funcName)s %(pathname)s:%(lineno)d') }
+      it { should contain_keystone_config('DEFAULT/logging_exception_prefix').with_value('%(asctime)s.%(msecs)03d %(process)d TRACE %(name)s %(instance)s') }
+      it { should contain_keystone_config('DEFAULT/log_config_append').with_value('/etc/keystone/logging.conf') }
+
+    end
+
+    describe 'without extra log options' do
+      let :params do
+        default_params.merge({})
+
+        it { should contain_keystone_config('DEFAULT/logging_context_format_string').with_ensure('absent') }
+        it { should contain_keystone_config('DEFAULT/logging_default_format_string').with_ensure('absent') }
+        it { should contain_keystone_config('DEFAULT/logging_debug_format_suffix').with_ensure('absent') }
+        it { should contain_keystone_config('DEFAULT/logging_exception_prefix').with_ensure('absent') }
+        it { should contain_keystone_config('DEFAULT/log_config_append').with_ensure('absent') }
+
+        end
+    end
+
   end
 end

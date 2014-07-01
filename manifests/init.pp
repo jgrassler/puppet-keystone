@@ -20,7 +20,12 @@
 #   [use_syslog] Use syslog for logging. Optional.
 #     Defaults to False.
 #   [log_facility] Syslog facility to receive log lines. Optional.
-#   [catalog_type] Type of catalog that keystone uses to store endpoints,services. Optional.
+#   [logging_context_format_string] Format string to use for log messages with context. Optional
+#   [logging_default_format_string] Format string to use for log messages without context. Optional.
+#   [logging_debug_format_suffix] Data to append to log format when level is DEBUG. Optional.
+#   [logging_exception_prefix] Prefix each line of exception output with this format. Optional.
+#   [*log_config_append*] The name of an additional logging configuration file. See <https://docs.python.org/2/howto/logging.html>. Optional.
+#    [catalog_type] Type of catalog that keystone uses to store endpoints,services. Optional.
 #     Defaults to sql. (Also accepts template)
 #   [catalog_driver] Catalog driver used by Keystone to store endpoints and services. Optional.
 #     Setting this value will override and ignore catalog_type.
@@ -208,6 +213,11 @@ class keystone(
   $debug                 = false,
   $log_dir               = '/var/log/keystone',
   $log_file              = false,
+  $logging_context_format_string = undef,
+  $logging_default_format_string = undef,
+  $logging_debug_format_suffix = undef,
+  $logging_exception_prefix = undef,
+  $log_config_append           = undef,
   $use_syslog            = false,
   $log_facility          = 'LOG_USER',
   $catalog_type          = 'sql',
@@ -584,5 +594,62 @@ class keystone(
       }
     }
   }
+
+  # Log format
+
+  if $logging_context_format_string {
+    keystone_config {
+      'DEFAULT/logging_context_format_string' : value => $logging_context_format_string;
+      }
+    }
+    else {
+    keystone_config {
+      'DEFAULT/logging_context_format_string' : ensure => absent;
+      }
+    }
+
+  if $logging_default_format_string {
+    keystone_config {
+      'DEFAULT/logging_default_format_string' : value => $logging_default_format_string;
+      }
+    }
+    else {
+    keystone_config {
+      'DEFAULT/logging_default_format_string' : ensure => absent;
+      }
+    }
+
+  if $logging_debug_format_suffix {
+    keystone_config {
+      'DEFAULT/logging_debug_format_suffix' : value => $logging_debug_format_suffix;
+      }
+    }
+    else {
+    keystone_config {
+      'DEFAULT/logging_debug_format_suffix' : ensure => absent;
+      }
+    }
+
+  if $logging_exception_prefix {
+    keystone_config {
+      'DEFAULT/logging_exception_prefix' : value => $logging_exception_prefix;
+      }
+    }
+    else {
+    keystone_config {
+      'DEFAULT/logging_exception_prefix' : ensure => absent;
+      }
+    }
+
+  if $log_config_append {
+    keystone_config {
+      'DEFAULT/log_config_append' : value => $log_config_append;
+      }
+    }
+    else {
+    keystone_config {
+      'DEFAULT/log_config_append' : ensure => absent;
+      }
+    }
 
 }
